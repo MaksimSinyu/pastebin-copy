@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pastebin Clone</title>
+</head>
+<body>
+<h1>Paste your text</h1>
+<textarea id="pasteContent" placeholder="Enter your text here..." rows="10" cols="50"></textarea><br>
+<button onclick="submitPaste()">Create Link</button>
+<div id="linkContainer"></div>
+
+<script>
+    function submitPaste() {
+        const text = document.getElementById('pasteContent').value;
+        fetch('/api/v1/paste', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({text: text})
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                const linkContainer = document.getElementById('linkContainer');
+                const newLink = window.location.href + "api/v1/paste/" + data.hash;
+                linkContainer.innerHTML = `<p>Your link: <a href="${newLink}" target="_blank">${newLink}</a></p>`;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to create paste');
+            });
+    }
+</script>
+</body>
+</html>
